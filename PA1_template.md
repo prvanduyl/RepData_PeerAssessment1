@@ -9,7 +9,7 @@ Load the data from the csv file.
 setwd("F:/Coursera/Data_Science/Reproducible_Research/Week_2")
 activity <- read.csv("activity.csv")
 ```
-Reformat variable date to date format and make a 'clean' set of data that doesn't contain NA values for variable steps.
+Reformat variable 'date' to date format and make a 'clean' set of data that doesn't contain NA values for variable 'steps'.
 
 ```r
 activity$date <- as.Date(activity$date,"%Y-%m-%d")
@@ -63,7 +63,7 @@ Median total steps per day: 10766
 
 ## What is the average daily activity pattern?
 
-Calculate the average number of steps for each interval across all days
+Calculate the average number of steps for each interval across all days as preparation for the time series plot.
 
 ```r
 library(dplyr)
@@ -79,7 +79,8 @@ Make a time series plot
 library(ggplot2)
 time <- ggplot(avgStepsInt, aes(interval,avg.steps))
 time + geom_line(color = "tan4") +
-    labs(list(title = "Time series of average number of steps for 5-minute interval taken across the days", 
+    labs(list(title = "Time series of average number of steps for 5-minute interval 
+              taken across the days", 
               x = "5-minute interval of the day",
               y = "Average steps taken"))
 ```
@@ -106,7 +107,7 @@ percNA <- round(mean(is.na(activity$steps))*100,digits = 2)
 Total number of missing values in the dataset: 2304.  
 This is 13.11% of the total dataset.
 
-Use the average steps per interval calculated across all days to impute the missing values in the original dataset.
+Use the average steps per interval calculated across all days to impute the missing values in the original dataset.  
 Create a new dataset from the original dataset with the missing values imputed
 
 ```r
@@ -114,7 +115,7 @@ activityImp <- activity
 activityImp$steps[is.na(activityImp$steps)] <- avgStepsInt$avg.steps
 ```
 
-First calculate the total number of steps taken per day for the imputed dataset.
+Calculate the total number of steps taken per day for the imputed dataset as preparation for the histogram.
 
 ```r
 library(dplyr)
@@ -124,7 +125,7 @@ totStepsImpDay <- summarise(groupsImpDay,
                          sum.steps = sum(steps, rm.na = TRUE))
 ```
 
-The histogram beloging to the imputed dataset
+The histogram belonging to the imputed dataset.
 
 ```r
 library(ggplot2)
@@ -145,7 +146,6 @@ hist + geom_histogram(na.rm = TRUE,
 
 Calculate and report the mean and median of the total number of steps taken per day after imputation.
 
-
 ```r
 library(dplyr)
 groupsImpTot <- group_by(totStepsImpDay)
@@ -160,7 +160,7 @@ Median total steps per day: 10767.1886792
 
 The mean didn't change. This is logical when looking the imputed values were the mean values per interval.
 This is also reflected in the histogram. Just the bin containing the mean increased.
-The median converted towards the mean. Also logical when realising there are values added equal to the mean.
+The median converted towards the mean.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -168,11 +168,14 @@ Create a new factor variable in the dataset with two levels "weekday" and "weeke
 
 ```r
 library(lubridate)
-activityImp$weekdayNbr <- wday(activity$date, label = FALSE)
-activityImp$weekdayInd <- factor(ifelse(wday(activityImp$date, label = FALSE) %in% c(1,7), "weekend", "weekday"), levels = c("weekday","weekend"))
+activityImp$weekdayInd <- factor(ifelse(wday(activityImp$date, 
+                                             label = FALSE) %in% c(1,7), 
+                                        "weekend", 
+                                        "weekday"), 
+                                 levels = c("weekday","weekend"))
 ```
 
-Make a panel plot with time series divided between weekday and weekend days. 
+Panel plot with time series divided between weekday and weekend days. 
 
 ```r
 library(dplyr)
@@ -186,7 +189,8 @@ avgStepsImpInt <- summarise(groupsImpInt,
 library(ggplot2)
 timeWd <- ggplot(avgStepsImpInt, aes(interval,avg.steps))
 timeWd + geom_line(color = "tan4") + facet_grid(weekdayInd ~ .) +
-    labs(list(title = "Time series of average number of steps for 5-minute interval taken across the days\ndivided between weekdays and weekend days", 
+    labs(list(title = "Time series of average number of steps for 5-minute interval 
+              taken across the days divided between weekdays and weekend days", 
               x = "5-minute interval of the day",
               y = "Average steps taken"))
 ```
